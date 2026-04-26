@@ -2,7 +2,7 @@ import { useLocation } from 'react-router'
 import { useUser } from '@clerk/clerk-react'
 import { Search, Bell, RefreshCw } from 'lucide-react'
 import { useState } from 'react'
-import { useQuery } from 'convex/react'
+import { useQuery, useConvexAuth } from 'convex/react'
 import { api } from '../../../convex/_generated/api'
 
 const pageMeta: Record<string, { title: string; subtitle: string }> = {
@@ -23,7 +23,8 @@ export function Topbar() {
 
   const meta = pageMeta[location.pathname] ?? { title: 'Dashboard', subtitle: '' }
 
-  const queueStats = useQuery(api.queue.getStats)
+  const { isAuthenticated } = useConvexAuth()
+  const queueStats = useQuery(api.queue.getStats, isAuthenticated ? {} : 'skip')
   const hasNotifications = (queueStats?.totalFailed ?? 0) > 0
 
   return (

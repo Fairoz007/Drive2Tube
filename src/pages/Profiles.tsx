@@ -4,8 +4,9 @@ import { api } from '../../convex/_generated/api'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmationDialog } from '@/components/shared/ConfirmationDialog'
-import { FolderOpen, Plus, Edit3, Trash2, Power, Youtube, Image, Clock, Hash } from 'lucide-react'
+import { FolderOpen, Plus, Edit3, Trash2, Power, Youtube, Image, Clock, Hash, Search } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { DrivePickerButton } from '@/components/shared/DrivePickerButton'
 
 interface ProfileFormData {
   name: string
@@ -300,63 +301,55 @@ export function ProfilesPage() {
               </div>
 
               {/* Drive Folder */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm text-[#8A95A5] mb-1.5">Drive Folder ID *</label>
-                  <input
-                    type="text"
-                    value={form.driveFolderId}
-                    onChange={(e) => setForm({ ...form, driveFolderId: e.target.value })}
-                    placeholder="Folder ID"
-                    className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all font-mono-data"
-                    style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#2196F3'; e.target.style.boxShadow = '0 0 20px rgba(33, 150, 243, 0.15)' }}
-                    onBlur={(e) => { e.target.style.borderColor = '#2A3A52'; e.target.style.boxShadow = 'none' }}
+              <div>
+                <label className="block text-sm text-[#8A95A5] mb-1.5">Source Video Folder *</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={form.driveFolderName || form.driveFolderId}
+                      readOnly
+                      placeholder="Select a folder from Drive"
+                      className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all cursor-not-allowed"
+                      style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
+                    />
+                  </div>
+                  <DrivePickerButton
+                    type="folder"
+                    label="Browse"
+                    onSelect={(id, name) => setForm({ ...form, driveFolderId: id, driveFolderName: name })}
+                    className="h-11"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm text-[#8A95A5] mb-1.5">Folder Name</label>
-                  <input
-                    type="text"
-                    value={form.driveFolderName}
-                    onChange={(e) => setForm({ ...form, driveFolderName: e.target.value })}
-                    placeholder="Display name"
-                    className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all"
-                    style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#2196F3'; e.target.style.boxShadow = '0 0 20px rgba(33, 150, 243, 0.15)' }}
-                    onBlur={(e) => { e.target.style.borderColor = '#2A3A52'; e.target.style.boxShadow = 'none' }}
-                  />
-                </div>
+                {form.driveFolderId && (
+                  <p className="mt-1 text-[10px] text-[#475569] font-mono-data truncate">ID: {form.driveFolderId}</p>
+                )}
               </div>
 
               {/* Thumbnail Folder */}
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm text-[#8A95A5] mb-1.5">Thumbnail Folder ID</label>
-                  <input
-                    type="text"
-                    value={form.thumbnailFolderId}
-                    onChange={(e) => setForm({ ...form, thumbnailFolderId: e.target.value })}
-                    placeholder="Folder ID"
-                    className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all font-mono-data"
-                    style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#2196F3'; e.target.style.boxShadow = '0 0 20px rgba(33, 150, 243, 0.15)' }}
-                    onBlur={(e) => { e.target.style.borderColor = '#2A3A52'; e.target.style.boxShadow = 'none' }}
+              <div>
+                <label className="block text-sm text-[#8A95A5] mb-1.5">Thumbnail Folder (Optional)</label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <input
+                      type="text"
+                      value={form.thumbnailFolderName || form.thumbnailFolderId}
+                      readOnly
+                      placeholder="Select a folder from Drive"
+                      className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all cursor-not-allowed"
+                      style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
+                    />
+                  </div>
+                  <DrivePickerButton
+                    type="folder"
+                    label="Browse"
+                    onSelect={(id, name) => setForm({ ...form, thumbnailFolderId: id, thumbnailFolderName: name })}
+                    className="h-11"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm text-[#8A95A5] mb-1.5">Thumbnail Folder Name</label>
-                  <input
-                    type="text"
-                    value={form.thumbnailFolderName}
-                    onChange={(e) => setForm({ ...form, thumbnailFolderName: e.target.value })}
-                    placeholder="Display name"
-                    className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all"
-                    style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#2196F3'; e.target.style.boxShadow = '0 0 20px rgba(33, 150, 243, 0.15)' }}
-                    onBlur={(e) => { e.target.style.borderColor = '#2A3A52'; e.target.style.boxShadow = 'none' }}
-                  />
-                </div>
+                {form.thumbnailFolderId && (
+                  <p className="mt-1 text-[10px] text-[#475569] font-mono-data truncate">ID: {form.thumbnailFolderId}</p>
+                )}
               </div>
 
               {/* YouTube Channel */}

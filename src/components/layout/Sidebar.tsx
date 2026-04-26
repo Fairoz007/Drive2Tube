@@ -14,6 +14,7 @@ import {
 
 const navItems = [
   { path: '/', label: 'Overview', icon: LayoutDashboard },
+  { path: '/upload', label: 'Quick Upload', icon: Upload },
   { path: '/profiles', label: 'Content Profiles', icon: FolderOpen },
   { path: '/scheduler', label: 'Upload Scheduler', icon: CalendarClock },
   { path: '/queue', label: 'Queue Manager', icon: ListOrdered },

@@ -10,6 +10,7 @@ import { TitlesPage } from './pages/Titles'
 import { ThumbnailsPage } from './pages/Thumbnails'
 import { LogsPage } from './pages/Logs'
 import { SettingsPage } from './pages/Settings'
+import { UploadPage } from './pages/Upload'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isLoaded, isSignedIn } = useAuth()
@@ -33,6 +34,14 @@ export default function App() {
   return (
     <Routes>
       <Route path="/sign-in" element={<SignInPage />} />
+      <Route
+        path="/upload"
+        element={
+          <ProtectedRoute>
+            <UploadPage />
+          </ProtectedRoute>
+        }
+      />
       <Route
         path="/"
         element={

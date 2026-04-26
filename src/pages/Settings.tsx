@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { useUser } from '@clerk/clerk-react'
 import toast from 'react-hot-toast'
+import { Button } from '@/components/ui/button'
 
 export function SettingsPage() {
   const { user } = useUser()
@@ -242,45 +243,65 @@ export function SettingsPage() {
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-4">
               {/* Google Drive */}
-              <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
-                <div className="flex items-center gap-3">
-                  <Upload size={16} className="text-[#4ADE80]" />
-                  <div>
-                    <p className="text-sm font-medium text-[#E8ECF1]">Google Drive</p>
-                    <p className="text-xs text-[#475569]">Source videos</p>
+              <div className="p-4 rounded-xl border border-[#2A3A52] bg-[#0A1628]/50 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                      <Upload size={16} className="text-blue-500" />
+                    </div>
+                    <p className="text-sm font-semibold text-white">Google Drive</p>
                   </div>
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                      settings.googleDriveConnected 
+                        ? 'bg-green-500/10 text-green-500' 
+                        : 'bg-red-500/10 text-red-500'
+                    }`}
+                  >
+                    {settings.googleDriveConnected ? 'Active' : 'Missing'}
+                  </span>
                 </div>
-                <span
-                  className="text-xs font-medium px-2 py-0.5 rounded-full"
-                  style={{
-                    backgroundColor: settings.googleDriveConnected ? 'rgba(74, 222, 128, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                    color: settings.googleDriveConnected ? '#4ADE80' : '#EF4444',
-                  }}
+                <p className="text-xs text-[#8A95A5]">Used to access your video files and thumbnails for automation.</p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full text-xs h-8 border-[#2A3A52] hover:bg-white/5"
+                  onClick={() => toast.success('Re-authenticating...')}
                 >
-                  {settings.googleDriveConnected ? 'Connected' : 'Not Connected'}
-                </span>
+                  {settings.googleDriveConnected ? 'Reconnect' : 'Connect Account'}
+                </Button>
               </div>
 
               {/* YouTube */}
-              <div className="flex items-center justify-between p-3 rounded-lg" style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}>
-                <div className="flex items-center gap-3">
-                  <Globe size={16} className="text-[#EF4444]" />
-                  <div>
-                    <p className="text-sm font-medium text-[#E8ECF1]">YouTube</p>
-                    <p className="text-xs text-[#475569]">Upload destination</p>
+              <div className="p-4 rounded-xl border border-[#2A3A52] bg-[#0A1628]/50 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                      <Globe size={16} className="text-red-500" />
+                    </div>
+                    <p className="text-sm font-semibold text-white">YouTube API</p>
                   </div>
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                      settings.youtubeConnected 
+                        ? 'bg-green-500/10 text-green-500' 
+                        : 'bg-red-500/10 text-red-500'
+                    }`}
+                  >
+                    {settings.youtubeConnected ? 'Active' : 'Missing'}
+                  </span>
                 </div>
-                <span
-                  className="text-xs font-medium px-2 py-0.5 rounded-full"
-                  style={{
-                    backgroundColor: settings.youtubeConnected ? 'rgba(74, 222, 128, 0.1)' : 'rgba(239, 68, 68, 0.1)',
-                    color: settings.youtubeConnected ? '#4ADE80' : '#EF4444',
-                  }}
+                <p className="text-xs text-[#8A95A5]">Used to upload videos, set titles, and manage channel content.</p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full text-xs h-8 border-[#2A3A52] hover:bg-white/5"
+                  onClick={() => toast.success('Verifying tokens...')}
                 >
-                  {settings.youtubeConnected ? 'Connected' : 'Not Connected'}
-                </span>
+                  {settings.youtubeConnected ? 'Reconnect' : 'Connect Channel'}
+                </Button>
               </div>
             </div>
 
