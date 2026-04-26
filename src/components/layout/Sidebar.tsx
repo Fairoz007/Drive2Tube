@@ -10,6 +10,7 @@ import {
   ScrollText,
   Settings,
   LogOut,
+  Upload,
 } from 'lucide-react'
 
 const navItems = [

@@ -4,9 +4,11 @@ import { api } from '../../convex/_generated/api'
 import { EmptyState } from '@/components/shared/EmptyState'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { ConfirmationDialog } from '@/components/shared/ConfirmationDialog'
-import { FolderOpen, Plus, Edit3, Trash2, Power, Youtube, Image, Clock, Hash, Search } from 'lucide-react'
+import { FolderOpen, Plus, Edit3, Trash2, Power, Youtube, Image as ImageIcon, Clock, Hash } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { DrivePickerButton } from '@/components/shared/DrivePickerButton'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 interface ProfileFormData {
   name: string
@@ -56,7 +58,7 @@ export function ProfilesPage() {
     setShowModal(true)
   }
 
-  const openEdit = (profile: NonNullable<typeof profiles>[0]) => {
+  const openEdit = (profile: any) => {
     setForm({
       name: profile.name,
       driveFolderId: profile.driveFolderId,
@@ -81,7 +83,7 @@ export function ProfilesPage() {
       return
     }
     if (!form.driveFolderId.trim()) {
-      toast.error('Drive folder ID is required')
+      toast.error('Drive folder selection is required')
       return
     }
 
@@ -125,6 +127,8 @@ export function ProfilesPage() {
         setForm({ ...form, scheduleTimes: [...form.scheduleTimes, scheduleInput].sort() })
       }
       setScheduleInput('')
+    } else {
+      toast.error('Please enter time in HH:MM format')
     }
   }
 
@@ -132,16 +136,16 @@ export function ProfilesPage() {
     setForm({ ...form, scheduleTimes: form.scheduleTimes.filter((t) => t !== time) })
   }
 
-  if (!profiles) {
+  if (profiles === undefined) {
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div className="h-8 w-48 animate-skeleton rounded" style={{ backgroundColor: '#111D2E' }} />
           <div className="h-10 w-32 animate-skeleton rounded-lg" style={{ backgroundColor: '#111D2E' }} />
         </div>
-        <div className="grid gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-40 animate-skeleton rounded-xl" style={{ backgroundColor: '#111D2E' }} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="h-44 animate-skeleton rounded-xl" style={{ backgroundColor: '#111D2E' }} />
           ))}
         </div>
       </div>
@@ -156,14 +160,13 @@ export function ProfilesPage() {
           <h2 className="text-xl font-bold text-[#E8ECF1]">Content Profiles</h2>
           <p className="text-sm text-[#8A95A5] mt-0.5">{profiles.length} profile{profiles.length !== 1 ? 's' : ''} configured</p>
         </div>
-        <button
+        <Button
           onClick={openCreate}
-          className="flex items-center gap-2 px-4 h-10 rounded-lg text-sm font-medium text-white transition-colors hover:opacity-90"
-          style={{ backgroundColor: '#2196F3' }}
+          className="bg-blue-600 hover:bg-blue-500 text-white"
         >
           <Plus size={16} />
           New Profile
-        </button>
+        </Button>
       </div>
 
       {/* Profiles Grid */}
@@ -176,7 +179,7 @@ export function ProfilesPage() {
         />
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {profiles.map((profile: typeof profiles[0]) => (
+          {profiles.map((profile) => (
             <div
               key={profile._id}
               className="rounded-xl p-5 transition-all duration-300 hover:-translate-y-0.5"
@@ -229,7 +232,7 @@ export function ProfilesPage() {
                 </div>
                 {profile.thumbnailFolderName && (
                   <div className="flex items-center gap-2 text-xs text-[#8A95A5]">
-                    <Image size={13} className="text-[#475569]" />
+                    <ImageIcon size={13} className="text-[#475569]" />
                     <span className="truncate">{profile.thumbnailFolderName}</span>
                   </div>
                 )}
@@ -282,158 +285,116 @@ export function ProfilesPage() {
 
             <div className="space-y-4">
               {/* Name */}
-              <div>
-                <label className="block text-sm text-[#8A95A5] mb-1.5">Profile Name *</label>
-                <input
-                  type="text"
+              <div className="space-y-1.5">
+                <label className="text-sm text-[#8A95A5]">Profile Name *</label>
+                <Input
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="e.g., Palworld, GTA V, Minecraft"
-                  className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all"
-                  style={{
-                    backgroundColor: '#111D2E',
-                    border: '1px solid #2A3A52',
-                    color: '#E8ECF1',
-                  }}
-                  onFocus={(e) => { e.target.style.borderColor = '#2196F3'; e.target.style.boxShadow = '0 0 20px rgba(33, 150, 243, 0.15)' }}
-                  onBlur={(e) => { e.target.style.borderColor = '#2A3A52'; e.target.style.boxShadow = 'none' }}
+                  placeholder="e.g., Palworld Highlights"
+                  className="bg-[#111D2E] border-[#2A3A52] text-white"
                 />
               </div>
 
               {/* Drive Folder */}
-              <div>
-                <label className="block text-sm text-[#8A95A5] mb-1.5">Source Video Folder *</label>
+              <div className="space-y-1.5">
+                <label className="text-sm text-[#8A95A5]">Source Video Folder *</label>
                 <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      value={form.driveFolderName || form.driveFolderId}
-                      readOnly
-                      placeholder="Select a folder from Drive"
-                      className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all cursor-not-allowed"
-                      style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
-                    />
-                  </div>
+                  <Input
+                    value={form.driveFolderName || form.driveFolderId}
+                    readOnly
+                    placeholder="Select folder..."
+                    className="bg-[#111D2E] border-[#2A3A52] text-white cursor-default"
+                  />
                   <DrivePickerButton
                     type="folder"
                     label="Browse"
                     onSelect={(id, name) => setForm({ ...form, driveFolderId: id, driveFolderName: name })}
-                    className="h-11"
+                    className="h-10"
                   />
                 </div>
-                {form.driveFolderId && (
-                  <p className="mt-1 text-[10px] text-[#475569] font-mono-data truncate">ID: {form.driveFolderId}</p>
-                )}
               </div>
 
               {/* Thumbnail Folder */}
-              <div>
-                <label className="block text-sm text-[#8A95A5] mb-1.5">Thumbnail Folder (Optional)</label>
+              <div className="space-y-1.5">
+                <label className="text-sm text-[#8A95A5]">Thumbnail Folder (Optional)</label>
                 <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <input
-                      type="text"
-                      value={form.thumbnailFolderName || form.thumbnailFolderId}
-                      readOnly
-                      placeholder="Select a folder from Drive"
-                      className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all cursor-not-allowed"
-                      style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
-                    />
-                  </div>
+                  <Input
+                    value={form.thumbnailFolderName || form.thumbnailFolderId}
+                    readOnly
+                    placeholder="Select folder..."
+                    className="bg-[#111D2E] border-[#2A3A52] text-white cursor-default"
+                  />
                   <DrivePickerButton
                     type="folder"
                     label="Browse"
                     onSelect={(id, name) => setForm({ ...form, thumbnailFolderId: id, thumbnailFolderName: name })}
-                    className="h-11"
+                    className="h-10"
                   />
                 </div>
-                {form.thumbnailFolderId && (
-                  <p className="mt-1 text-[10px] text-[#475569] font-mono-data truncate">ID: {form.thumbnailFolderId}</p>
-                )}
               </div>
 
               {/* YouTube Channel */}
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm text-[#8A95A5] mb-1.5">YouTube Channel ID</label>
-                  <input
-                    type="text"
+                <div className="space-y-1.5">
+                  <label className="text-sm text-[#8A95A5]">YouTube Channel ID</label>
+                  <Input
                     value={form.youtubeChannelId}
                     onChange={(e) => setForm({ ...form, youtubeChannelId: e.target.value })}
                     placeholder="Channel ID"
-                    className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all font-mono-data"
-                    style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#2196F3'; e.target.style.boxShadow = '0 0 20px rgba(33, 150, 243, 0.15)' }}
-                    onBlur={(e) => { e.target.style.borderColor = '#2A3A52'; e.target.style.boxShadow = 'none' }}
+                    className="bg-[#111D2E] border-[#2A3A52] text-white font-mono text-xs"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm text-[#8A95A5] mb-1.5">Channel Name</label>
-                  <input
-                    type="text"
+                <div className="space-y-1.5">
+                  <label className="text-sm text-[#8A95A5]">Channel Name</label>
+                  <Input
                     value={form.youtubeChannelName}
                     onChange={(e) => setForm({ ...form, youtubeChannelName: e.target.value })}
                     placeholder="Display name"
-                    className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all"
-                    style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#2196F3'; e.target.style.boxShadow = '0 0 20px rgba(33, 150, 243, 0.15)' }}
-                    onBlur={(e) => { e.target.style.borderColor = '#2A3A52'; e.target.style.boxShadow = 'none' }}
+                    className="bg-[#111D2E] border-[#2A3A52] text-white"
                   />
                 </div>
               </div>
 
-              {/* Daily Upload Count & Schedule */}
+              {/* Daily Upload Count \u0026 Schedule */}
               <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-sm text-[#8A95A5] mb-1.5">Daily Uploads (1-10)</label>
-                  <input
+                <div className="space-y-1.5">
+                  <label className="text-sm text-[#8A95A5]">Daily Uploads (1-10)</label>
+                  <Input
                     type="number"
                     min={1}
                     max={10}
                     value={form.dailyUploadCount}
                     onChange={(e) => setForm({ ...form, dailyUploadCount: Math.min(Math.max(parseInt(e.target.value) || 1, 1), 10) })}
-                    className="w-full h-11 px-4 rounded-lg text-sm outline-none transition-all"
-                    style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
-                    onFocus={(e) => { e.target.style.borderColor = '#2196F3'; e.target.style.boxShadow = '0 0 20px rgba(33, 150, 243, 0.15)' }}
-                    onBlur={(e) => { e.target.style.borderColor = '#2A3A52'; e.target.style.boxShadow = 'none' }}
+                    className="bg-[#111D2E] border-[#2A3A52] text-white"
                   />
                 </div>
-                <div>
-                  <label className="block text-sm text-[#8A95A5] mb-1.5">Add Schedule (HH:MM)</label>
+                <div className="space-y-1.5">
+                  <label className="text-sm text-[#8A95A5]">Add Time (HH:MM)</label>
                   <div className="flex gap-2">
-                    <input
-                      type="text"
+                    <Input
                       value={scheduleInput}
                       onChange={(e) => setScheduleInput(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && addScheduleTime()}
                       placeholder="09:00"
-                      className="flex-1 h-11 px-4 rounded-lg text-sm outline-none transition-all font-mono-data"
-                      style={{ backgroundColor: '#111D2E', border: '1px solid #2A3A52', color: '#E8ECF1' }}
-                      onFocus={(e) => { e.target.style.borderColor = '#2196F3'; e.target.style.boxShadow = '0 0 20px rgba(33, 150, 243, 0.15)' }}
-                      onBlur={(e) => { e.target.style.borderColor = '#2A3A52'; e.target.style.boxShadow = 'none' }}
+                      className="bg-[#111D2E] border-[#2A3A52] text-white font-mono"
                     />
-                    <button
-                      onClick={addScheduleTime}
-                      className="h-11 px-3 rounded-lg text-sm font-medium text-white"
-                      style={{ backgroundColor: '#2196F3' }}
-                    >
+                    <Button onClick={addScheduleTime} size="sm" className="bg-blue-600 hover:bg-blue-500">
                       Add
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>
 
               {/* Schedule Times Display */}
               {form.scheduleTimes.length > 0 && (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 py-1">
                   {form.scheduleTimes.map((time) => (
                     <span
                       key={time}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-mono-data"
-                      style={{ backgroundColor: 'rgba(33, 150, 243, 0.1)', color: '#2196F3', border: '1px solid rgba(33, 150, 243, 0.2)' }}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono bg-blue-500/10 text-blue-400 border border-blue-500/20"
                     >
                       {time}
-                      <button onClick={() => removeScheduleTime(time)} className="hover:text-white ml-1">×</button>
+                      <button onClick={() => removeScheduleTime(time)} className="hover:text-white transition-colors text-lg leading-none">×</button>
                     </span>
                   ))}
                 </div>
@@ -441,42 +402,42 @@ export function ProfilesPage() {
 
               {/* Toggle Options */}
               <div className="flex items-center gap-6 pt-2">
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex items-center gap-2 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={form.useRandomTitle}
                     onChange={(e) => setForm({ ...form, useRandomTitle: e.target.checked })}
-                    className="w-4 h-4 rounded accent-[#2196F3]"
+                    className="w-4 h-4 rounded border-[#2A3A52] bg-[#111D2E] text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-[#8A95A5]">Random title</span>
+                  <span className="text-sm text-[#8A95A5] group-hover:text-[#E8ECF1] transition-colors">Random title</span>
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer">
+                <label className="flex items-center gap-2 cursor-pointer group">
                   <input
                     type="checkbox"
                     checked={form.useRandomThumbnail}
                     onChange={(e) => setForm({ ...form, useRandomThumbnail: e.target.checked })}
-                    className="w-4 h-4 rounded accent-[#2196F3]"
+                    className="w-4 h-4 rounded border-[#2A3A52] bg-[#111D2E] text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-sm text-[#8A95A5]">Random thumbnail</span>
+                  <span className="text-sm text-[#8A95A5] group-hover:text-[#E8ECF1] transition-colors">Random thumbnail</span>
                 </label>
               </div>
             </div>
 
             {/* Actions */}
-            <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-[#2A3A52]">
-              <button
+            <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-[#2A3A52]">
+              <Button
+                variant="outline"
                 onClick={() => setShowModal(false)}
-                className="px-4 h-10 rounded-lg text-sm font-medium text-[#8A95A5] hover:bg-white/5 transition-colors border border-[#2A3A52]"
+                className="bg-transparent border-[#2A3A52] text-[#8A95A5] hover:bg-white/5"
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSubmit}
-                className="px-4 h-10 rounded-lg text-sm font-medium text-white transition-colors hover:opacity-90"
-                style={{ backgroundColor: '#2196F3' }}
+                className="bg-blue-600 hover:bg-blue-500 text-white min-w-[120px]"
               >
                 {editingId ? 'Update Profile' : 'Create Profile'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
